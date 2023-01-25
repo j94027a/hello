@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "@extrinsec/appguard": "latest",
+    "axios": "^0.21.1",
+    "escape-html": "1.0.3",
+    "node-fetch": "^2.6.1"
+  }
+}
