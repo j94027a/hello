@@ -50,3 +50,15 @@ jobs:
       - id: invoke-python
         run: |
           gcloud functions call demo_python --data '{"message":"Appguard!"}'
+
+      - id: deploy-ruby
+        uses: google-github-actions/deploy-cloud-functions@v1
+        with:
+          name: demo_ruby
+          runtime: ruby30
+          source_dir: ruby
+          env_vars: 'ES_POLICY_GROUP_NAME=observeAll.ability,ES_LICENSE_KEY=${{ secrets.ES_LICENSE_KEY }}'
+
+      - id: invoke-ruby
+        run: |
+          gcloud functions call demo_ruby --data '{"message":"Appguard!"}'

@@ -1,0 +1,4 @@
+source "https://rubygems.org"
+
+gem "appguard", "~> 0.3"
+gem "ffi", "~> 1.15"
