@@ -12,28 +12,41 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     permissions:
-      contents: "read"
-      id-token: "write"
+      contents: read
+      id-token: write
 
     steps:
-      - uses: 'actions/checkout@v3'
+      - uses: actions/checkout@v3
 
-      - id: 'auth'
-        uses: 'google-github-actions/auth@v1'
+      - id: auth
+        uses: google-github-actions/auth@v1
         with:
-          workload_identity_provider: "${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER_REF }}"
-          service_account: "${{ secrets.GCP_SERVICE_ACCOUNT_EMAIL }}"
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER_REF }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT_EMAIL }}
 
-      - id: 'deploy-nodejs'
-        uses: "google-github-actions/deploy-cloud-functions@v1"
+      - id: gcloud-cli
+        uses: google-github-actions/setup-gcloud@v1
+
+      - id: deploy-nodejs
+        uses: google-github-actions/deploy-cloud-functions@v1
         with:
-          name: 'demo_nodejs'
-          runtime: 'nodejs16'
-          env_vars: "ES_POLICY_GROUP_NAME=observeAll.ability,ES_LICENSE_KEY=${{ secrets.ES_LICENSE_KEY }}"
+          name: demo_nodejs
+          runtime: nodejs18
+          source_dir: nodejs
+          env_vars: 'ES_POLICY_GROUP_NAME=observeAll.ability,ES_LICENSE_KEY=${{ secrets.ES_LICENSE_KEY }}'
 
-      - id: 'gcloud-cli'
-        uses: 'google-github-actions/setup-gcloud@v1'
-
-      - id: "invoke"
+      - id: invoke-nodejs
         run: |
           gcloud functions call demo_nodejs --data '{"message":"Appguard!"}'
+
+      - id: deploy-python
+        uses: google-github-actions/deploy-cloud-functions@v1
+        with:
+          name: demo_python
+          runtime: python39
+          source_dir: python
+          env_vars: 'ES_POLICY_GROUP_NAME=observeAll.ability,ES_LICENSE_KEY=${{ secrets.ES_LICENSE_KEY }}'
+
+      - id: invoke-python
+        run: |
+          gcloud functions call demo_python --data '{"message":"Appguard!"}'
